@@ -1,0 +1,111 @@
+:root {
+  --primary: #4B9DA9;
+  --secondary: #91C6BC;
+  --light: #F6F3C2;
+  --accent: #E37434;
+}
+
+/* GLOBAL */
+body {
+  background-color: var(--dark);
+  color: var(--light);
+  font-family: Arial, sans-serif;
+}
+
+/* SIDEBAR */
+.sidebar {
+  background-color: var(--primary);
+  width: 260px;
+}
+
+.sidebar h3 {
+  background-color: var(--accent);
+  color: white;
+  padding: 20px;
+  margin: 0;
+}
+
+.sidebar .w3-button {
+  color: black;
+  font-weight: bold;
+}
+
+.sidebar .w3-button:hover {
+  background-color: var(--accent) !important;
+  color: white !important;
+}
+
+.active {
+  background-color: rgb(226, 243, 192) !important;
+  color: var(--primary) !important;
+}
+
+/* MAIN */
+.w3-main {
+  background-color: var(--dark);
+  min-height: 100vh;
+}
+
+/* HERO (Landing page) */
+.hero {
+  background-color: var(--accent);
+  color: white;
+  padding: 100px 60px;
+}
+
+.hero h1 {
+  font-size: 3.5rem;
+}
+
+.hero span {
+  color: var(--primary);
+}
+
+.hero p {
+  font-size: 1.3rem;
+  margin-top: 10px;
+}
+
+/* PAGE HEADER (Other pages) */
+.page-header {
+  background-color: var(--accent);
+  color: white;
+  padding: 60px;
+}
+
+.page-header h1 {
+  font-size: 3rem;
+}
+
+/* CONTENT SECTION */
+.section {
+  background-color: #1f232b;
+  margin: 40px;
+  padding: 40px;
+  border-left: 10px solid var(--primary);
+}
+
+/* CARDS */
+.card {
+  background-color: black;
+  padding: 25px;
+  margin-bottom: 20px;
+  border: 2px solid var(--primary);
+}
+
+/* BUTTON */
+.btn {
+  display: inline-block;
+  margin-top: 30px;
+  padding: 15px 40px;
+  background-color: black;
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: bold;
+  border: 2px solid var(--primary);
+}
+
+.btn:hover {
+  background-color: var(--primary);
+  color: black;
+}
