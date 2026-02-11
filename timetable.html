@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCIS Timetable — Jan 2026</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,-apple-system,sans-serif;background:#0a0a0a;color:#e5e5e5;line-height:1.4}
+header{background:#141414;border-bottom:1px solid #262626;padding:16px 24px;position:sticky;top:0;z-index:20}
+header h1{font-size:18px;display:flex;align-items:center;gap:8px}
+header h1 span{color:#22c55e}
+header p{font-size:12px;color:#737373;margin-top:2px}
+.container{max-width:1400px;margin:0 auto;padding:24px 16px}
+.section{margin-bottom:24px}
+.section-title{font-size:12px;font-weight:700;color:#737373;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.course-group{margin-bottom:12px}
+.course-group-title{font-size:11px;color:#a3a3a3;margin-bottom:6px;font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:4px 10px;border-radius:6px;font-size:12px;cursor:pointer;border:1px solid #333;background:#1a1a1a;color:#d4d4d4;transition:all .15s;user-select:none}
+.chip:hover{border-color:#555}
+.chip.active{background:#166534;border-color:#22c55e;color:#fff;font-weight:600}
+.clear-btn{padding:4px 12px;border-radius:6px;font-size:12px;cursor:pointer;border:1px solid #333;background:#1a1a1a;color:#ef4444;transition:all .15s}
+.clear-btn:hover{background:#7f1d1d;border-color:#ef4444}
+.preset-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:24px}
+.preset-bar .label{font-size:12px;font-weight:700;color:#737373;text-transform:uppercase;letter-spacing:1px}
+.preset-btn{padding:4px 10px;border-radius:6px;font-size:12px;cursor:pointer;border:1px solid #333;background:#1a1a1a;color:#d4d4d4;transition:all .15s}
+.preset-btn:hover{border-color:#555}
+.preset-del{background:none;border:none;color:#737373;cursor:pointer;font-size:14px;padding:2px 4px}
+.preset-del:hover{color:#ef4444}
+.save-input{padding:4px 8px;border-radius:6px;font-size:12px;border:1px solid #333;background:#1a1a1a;color:#e5e5e5;width:140px;outline:none}
+.save-input:focus{border-color:#22c55e}
+.btn-sm{padding:4px 10px;border-radius:6px;font-size:12px;cursor:pointer;border:1px solid #333;background:#1a1a1a;color:#d4d4d4}
+.btn-sm.primary{background:#166534;border-color:#22c55e;color:#fff}
+.table-wrap{overflow-x:auto;border-radius:8px;border:1px solid #262626}
+table{width:100%;border-collapse:collapse;min-width:900px}
+th{padding:8px;font-size:11px;font-weight:600;color:#737373;text-align:center;background:#141414;border-right:1px solid #262626;border-bottom:1px solid #262626}
+th:first-child,th:nth-child(2){text-align:left}
+td{padding:6px;border-right:1px solid #262626;border-bottom:1px solid #1f1f1f;font-size:11px;text-align:center;background:#0a0a0a;transition:all .2s}
+td.day-cell{font-weight:700;text-align:left;background:#111;vertical-align:top}
+td.prog-cell{font-weight:500;text-align:left;white-space:nowrap}
+td.entry{background:#1a1a1a}
+td.entry.highlight{background:#14532d;box-shadow:inset 0 0 0 2px #22c55e;font-weight:700;color:#fff}
+td.entry.dimmed{opacity:.25}
+.legend{display:flex;gap:16px;margin-top:24px;font-size:12px;color:#737373}
+.legend-box{width:16px;height:16px;border-radius:4px;display:inline-block;vertical-align:middle;margin-right:6px}
+</style>
+
+<style>
+	@font-face {
+		font-family: 'CameraPlainVariable';
+		src: url('https://cdn.gpteng.co/mcp-widgets/v1/fonts/CameraPlainVariable.woff2') format('woff2');
+		font-weight: 100 900;
+		font-style: normal;
+		font-display: swap;
+	}
+
+	#lovable-badge {
+		--badge-bg: #1b1b1b;
+		--badge-text: #c5c1b9;
+		--badge-text-hover: #dcdad5;
+		--badge-radius: 6px;
+		--badge-padding: 8px;
+		--badge-gap: 6px;
+		--badge-shadow: 
+			0 0 0 1px rgba(0, 0, 0, 0.88),
+			0 1px 0 0 rgba(0, 0, 0, 0.04),
+			0 2px 2px -1px rgba(0, 0, 0, 0.08),
+			0 4px 4px -2px rgba(0, 0, 0, 0.08),
+			0 8px 8px -4px rgba(0, 0, 0, 0.08),
+			0 16px 16px -8px rgba(0, 0, 0, 0.08);
+		--badge-transition-duration: 0.2s;
+		--badge-transition-easing: cubic-bezier(0.16, 1, 0.32, 1);
+		--focus-color: #575ECF;
+		--focus-offset: 2px;
+		--focus-width: 2px;
+		
+		position: fixed;
+		bottom: 12px;
+		right: 12px;
+		height: 24px;
+		display: flex;
+		align-items: center;
+		z-index: 1000000;
+		background-color: var(--badge-bg);
+		color: var(--badge-text);
+		border-radius: var(--badge-radius);
+		box-shadow: var(--badge-shadow);
+		font-size: 12px;
+		font-family: CameraPlainVariable, "CameraPlainVariable Fallback", -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+		font-weight: 400 !important;
+		text-transform: none !important;
+		font-feature-settings: normal !important;
+		transform: translateZ(0);
+		will-change: transform, opacity;
+	}
+
+	#lovable-badge-cta {
+		display: flex;
+		align-items: center;
+		gap: var(--badge-gap);
+		padding: 0 var(--badge-padding);
+		height: 100%;
+		color: inherit;
+		text-decoration: none;
+		white-space: nowrap;
+		border-radius: var(--badge-radius) 0 0 var(--badge-radius);
+		transition: 
+			background-color var(--badge-transition-duration) ease,
+			color var(--badge-transition-duration) ease,
+			transform 0.1s ease;
+	}
+
+	#lovable-badge-cta:hover {
+		background: rgba(255, 255, 255, 0.04);
+		color: var(--badge-text-hover);
+	}
+
+	#lovable-badge-cta:active {
+		transform: scale(0.98);
+	}
+
+	#lovable-badge-cta:focus {
+		outline: none;
+	}
+
+	#lovable-badge-cta:focus-visible {
+		outline: var(--focus-width) solid var(--focus-color);
+		outline-offset: var(--focus-offset);
+		z-index: 1;
+	}
+
+	#lovable-badge-text {
+		line-height: 1;
+	}
+
+	#lovable-badge-divider {
+		width: 1px;
+		height: 24px;
+		background-color: rgba(255, 255, 255, 0.04);
+		flex-shrink: 0;
+	}
+
+	#lovable-badge-close {
+		width: 24px;
+		height: 24px;
+		min-width: 24px;
+		min-height: 24px;
+		cursor: pointer;
+		background: none;
+		border: none;
+		padding: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 0 var(--badge-radius) var(--badge-radius) 0;
+		flex-shrink: 0;
+		transition: 
+			background-color var(--badge-transition-duration) ease,
+			transform 0.1s ease;
+	}
+
+	#lovable-badge-close:hover {
+		background: rgba(255, 255, 255, 0.04);
+	}
+
+	#lovable-badge-close:active {
+		transform: scale(0.92);
+	}
+
+	#lovable-badge-close:focus {
+		outline: none;
+	}
+
+	#lovable-badge-close:focus-visible {
+		outline: var(--focus-width) solid var(--focus-color);
+		outline-offset: calc(var(--focus-offset) * -1);
+		z-index: 1;
+	}
+
+	#lovable-badge-close svg path {
+		fill: var(--badge-text);
+		transition: fill var(--badge-transition-duration) ease;
+	}
+
+	#lovable-badge-close:hover svg path {
+		fill: var(--badge-text-hover);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		#lovable-badge-cta,
+		#lovable-badge-close,
+		#lovable-badge-close svg path {
+			transition: none;
+		}
+		
+		#lovable-badge-cta:active,
+		#lovable-badge-close:active {
+			transform: none;
+		}
+	}
+
+	@media (prefers-contrast: high) {
+		#lovable-badge {
+			--badge-bg: #000;
+			--badge-text: #fff;
+			--badge-text-hover: #fff;
+			border: 2px solid currentColor;
+		}
+		
+		#lovable-badge-cta:focus-visible,
+		#lovable-badge-close:focus-visible {
+			outline-width: 3px;
+		}
+	}
+</style>
+<meta name="twitter:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ca2d74dc-16f6-47fd-a970-9252274da4f6/id-preview-cafb8fae--01e20335-7518-4553-b0fd-923d9d21f9a0.lovable.app-1770805073571.png" /></head>
+<body>
+
+<header>
+<h1><span>🎓</span> SCIS Timetable — Jan 2026</h1>
+<p>University of Hyderabad • School of Computer & Information Sciences</p>
+</header>
+
+<div class="container">
+<div class="section" id="selector"></div>
+<div class="preset-bar" id="presetBar"></div>
+<div class="table-wrap" id="grid"></div>
+<div class="legend">
+<div><span class="legend-box" style="background:#14532d;box-shadow:inset 0 0 0 2px #22c55e"></span>Selected</div>
+<div><span class="legend-box" style="background:#1a1a1a;opacity:.25;border:1px solid #333"></span>Dimmed</div>
+<div><span class="legend-box" style="background:#1a1a1a;border:1px solid #333"></span>All (none selected)</div>
+</div>
+</div>
+
+<script>
+// DATA
+const courses=[
+{key:"SE",name:"Software Engineering (CS451)",cat:"Core"},{key:"SPM",name:"Software Project Management",cat:"Core"},{key:"COMM",name:"Communication Skills",cat:"Core"},
+{key:"DISC_MATH",name:"Discrete Maths",cat:"IMT II"},{key:"ENG_MATH",name:"Engineering Math II",cat:"IMT II"},{key:"ENG_PHY",name:"Engineering Physics 2",cat:"IMT II"},{key:"DFS",name:"Data & File Structures",cat:"IMT II"},{key:"ENG_DRAW",name:"Engineering Drawing",cat:"IMT II"},
+{key:"CBNOT",name:"CBNOT",cat:"IMT IV"},{key:"DBMS",name:"DBMS",cat:"IMT IV"},{key:"TOC",name:"Theory of Computation",cat:"IMT IV"},{key:"CBNOT_LAB",name:"CBNOT Lab",cat:"IMT IV"},
+{key:"SE_IMT",name:"Software Engineering (IMT)",cat:"IMT VI"},{key:"CG_LAB",name:"Computer Graphics Lab",cat:"IMT VI"},
+{key:"INT_TECH",name:"Internet Technologies",cat:"MCA II"},{key:"INT_TECH_LAB",name:"Internet Tech Lab",cat:"MCA II"},{key:"DS",name:"Data Structures",cat:"MCA II"},{key:"DS_LAB",name:"DS Lab",cat:"MCA II"},
+{key:"E1_SS",name:"System Security",cat:"E1"},{key:"E1_NS",name:"Network Security",cat:"E1"},
+{key:"E2_DL",name:"Deep Learning",cat:"E2"},{key:"E2_SC",name:"Soft Computing",cat:"E2"},
+{key:"E3_ML",name:"Machine Learning",cat:"E3"},{key:"E3_BCT",name:"Blockchain Tech",cat:"E3"},
+{key:"E4_ANM",name:"Adv Network Mgmt",cat:"E4"},{key:"E4_CC",name:"Cloud Computing",cat:"E4"},{key:"E4_EH",name:"Ethical Hacking",cat:"E4"},
+{key:"E5_CIP",name:"Colour Image Proc",cat:"E5"},{key:"E5_DDPC",name:"Distributed Data Proc",cat:"E5"},{key:"E5_VIR",name:"Virtualization",cat:"E5"},
+{key:"E6_NLP",name:"NLP",cat:"E6"},{key:"E6_IOT",name:"IoT",cat:"E6"}
+];
+const entries=[
+{d:"Monday",p:"M.Tech(CS)",s:9,n:2,l:"E6 (NLP-R13, IOT-R11)",c:["E6_NLP","E6_IOT"]},
+{d:"Monday",p:"M.Tech(CS)",s:11,n:2,l:"SE (CS451) - R13",c:["SE"]},
+{d:"Monday",p:"M.Tech(CS)",s:13,n:2,l:"E5 (CIP-R3, DDPC-R9, VIR-R13)",c:["E5_CIP","E5_DDPC","E5_VIR"]},
+{d:"Monday",p:"M.Tech(CS)",s:15,n:2,l:"E2 (DL-R3, SC-R9)",c:["E2_DL","E2_SC"]},
+{d:"Monday",p:"M.Tech(AI)",s:9,n:2,l:"E6 (NLP-R13, IOT-R11)",c:["E6_NLP","E6_IOT"]},
+{d:"Monday",p:"M.Tech(AI)",s:11,n:2,l:"SE (CS451) - R13",c:["SE"]},
+{d:"Monday",p:"M.Tech(AI)",s:13,n:2,l:"E5 (CIP-R3, DDPC-R9, VIR-R13)",c:["E5_CIP","E5_DDPC","E5_VIR"]},
+{d:"Monday",p:"M.Tech(AI)",s:15,n:2,l:"E2 (DL-R3, SC-R9)",c:["E2_DL","E2_SC"]},
+{d:"Tuesday",p:"IMT II",s:10,n:2,l:"Discrete Maths - R10",c:["DISC_MATH"]},
+{d:"Tuesday",p:"IMT IV",s:9,n:2,l:"CBNOT - R3",c:["CBNOT"]},
+{d:"Tuesday",p:"IMT IV",s:11,n:2,l:"DBMS - R11",c:["DBMS"]},
+{d:"Tuesday",p:"IMT IV",s:13,n:2,l:"TOC - R11",c:["TOC"]},
+{d:"Tuesday",p:"IMT VI",s:9,n:2,l:"E6 (NLP-R13, IOT-R11)",c:["E6_NLP","E6_IOT"]},
+{d:"Tuesday",p:"IMT VI",s:11,n:2,l:"SE - R3",c:["SE_IMT"]},
+{d:"Tuesday",p:"IMT VI",s:15,n:2,l:"CG Lab - AI Lab",c:["CG_LAB"]},
+{d:"Tuesday",p:"MCA II",s:9,n:2,l:"Int. Tech - AI Lab",c:["INT_TECH"]},
+{d:"Tuesday",p:"MCA II",s:11,n:2,l:"Int. Tech Lab - AI Lab",c:["INT_TECH_LAB"]},
+{d:"Tuesday",p:"MCA II",s:13,n:2,l:"E5 (CIP-R3, DDPC-R9, VIR-R13)",c:["E5_CIP","E5_DDPC","E5_VIR"]},
+{d:"Tuesday",p:"MCA II",s:15,n:2,l:"E2 (DL-R3, SC-R9)",c:["E2_DL","E2_SC"]},
+{d:"Wednesday",p:"M.Tech(CS)",s:9,n:2,l:"E1 (SS-R3, NS-R13)",c:["E1_SS","E1_NS"]},
+{d:"Wednesday",p:"M.Tech(CS)",s:11,n:1,l:"SE (CS451) - R13",c:["SE"]},
+{d:"Wednesday",p:"M.Tech(CS)",s:12,n:1,l:"Comm Skills - R3",c:["COMM"]},
+{d:"Wednesday",p:"M.Tech(CS)",s:13,n:2,l:"E5 (CIP-R3, DDPC-R9, VIR-R13)",c:["E5_CIP","E5_DDPC","E5_VIR"]},
+{d:"Wednesday",p:"M.Tech(AI)",s:9,n:2,l:"E1 (SS-R3, NS-R13)",c:["E1_SS","E1_NS"]},
+{d:"Wednesday",p:"M.Tech(AI)",s:11,n:1,l:"SE (CS451) - R13",c:["SE"]},
+{d:"Wednesday",p:"M.Tech(AI)",s:13,n:2,l:"E5 (CIP-R3, DDPC-R9, VIR-R13)",c:["E5_CIP","E5_DDPC","E5_VIR"]},
+{d:"Wednesday",p:"M.Tech(AI)",s:15,n:2,l:"Comm Skills - R13",c:["COMM"]},
+{d:"Thursday",p:"IMT II",s:9,n:1,l:"Engg. Math II - LHC3F9",c:["ENG_MATH"]},
+{d:"Thursday",p:"IMT II",s:10,n:2,l:"Engg. Physics 2",c:["ENG_PHY"]},
+{d:"Thursday",p:"IMT II",s:12,n:1,l:"DFS - R10",c:["DFS"]},
+{d:"Thursday",p:"IMT II",s:13,n:3,l:"Engg. Drawing",c:["ENG_DRAW"]},
+{d:"Thursday",p:"IMT IV",s:13,n:3,l:"CBNOT Lab - AI Lab",c:["CBNOT_LAB"]},
+{d:"Friday",p:"M.Tech(CS)",s:10,n:2,l:"E3 (ML-R13, BCT-R3)",c:["E3_ML","E3_BCT"]},
+{d:"Friday",p:"M.Tech(CS)",s:15,n:2,l:"E4 (ANM-R13, CC-R3)",c:["E4_ANM","E4_CC"]},
+{d:"Friday",p:"M.Tech(CS)",s:17,n:1,l:"SPM - R7",c:["SPM"]},
+{d:"Friday",p:"MCA II",s:9,n:2,l:"E3 (ML-R13, BCT-R3)",c:["E3_ML","E3_BCT"]},
+{d:"Friday",p:"MCA II",s:12,n:1,l:"E4 (CC-R3)",c:["E4_CC"]},
+{d:"Friday",p:"MCA II",s:13,n:1,l:"DS - R10",c:["DS"]},
+{d:"Friday",p:"MCA II",s:14,n:3,l:"DS Lab - AI Lab",c:["DS_LAB"]}
+];
+const days=["Monday","Tuesday","Wednesday","Thursday","Friday"];
+const hours=[9,10,11,12,13,14,15,16,17];
+
+let selected=new Set();
+let presets=JSON.parse(localStorage.getItem("tt-presets")||"[]");
+let showSave=false;
+
+function render(){renderSelector();renderPresets();renderGrid()}
+
+function renderSelector(){
+  const cats=[...new Set(courses.map(c=>c.cat))];
+  let h='<div class="section-title">Select Courses</div>';
+  cats.forEach(cat=>{
+    h+=`<div class="course-group"><div class="course-group-title">${cat}</div><div class="chips">`;
+    courses.filter(c=>c.cat===cat).forEach(c=>{
+      h+=`<div class="chip${selected.has(c.key)?" active":""}" onclick="toggle('${c.key}')">${c.name}</div>`;
+    });
+    h+='</div></div>';
+  });
+  if(selected.size>0) h+=`<div style="margin-top:8px"><button class="clear-btn" onclick="clearAll()">✕ Clear all (${selected.size})</button></div>`;
+  document.getElementById("selector").innerHTML=h;
+}
+
+function renderPresets(){
+  let h='<span class="label">📁 Presets</span>';
+  presets.forEach((p,i)=>{
+    h+=`<span><button class="preset-btn" onclick="loadPreset(${i})">${p.name} (${p.courses.length})</button><button class="preset-del" onclick="delPreset(${i})">×</button></span>`;
+  });
+  if(!showSave) h+=`<button class="btn-sm" onclick="showSave=true;render()" ${selected.size===0?"disabled":""}>💾 Save current</button>`;
+  else h+=`<input class="save-input" id="pName" placeholder="Preset name…" onkeydown="if(event.key==='Enter')savePreset()"> <button class="btn-sm primary" onclick="savePreset()">Save</button> <button class="btn-sm" onclick="showSave=false;render()">Cancel</button>`;
+  document.getElementById("presetBar").innerHTML=h;
+}
+
+function renderGrid(){
+  let h='<table><thead><tr><th style="text-align:left;width:80px">Day</th><th style="text-align:left;width:90px">Program</th>';
+  hours.forEach(hr=>h+=`<th>${String(hr).padStart(2,'0')}:00</th>`);
+  h+='</tr></thead><tbody>';
+  days.forEach(day=>{
+    const de=entries.filter(e=>e.d===day);
+    const progs=[...new Set(de.map(e=>e.p))];
+    if(!progs.length)return;
+    progs.forEach((prog,pi)=>{
+      const pe=de.filter(e=>e.p===prog);
+      const occ=new Set();
+      pe.forEach(e=>{for(let i=1;i<e.n;i++)occ.add(e.s+i)});
+      h+=`<tr style="border-top:${pi===0?'2px':'1px'} solid #262626">`;
+      if(pi===0) h+=`<td class="day-cell" rowspan="${progs.length}">${day}</td>`;
+      h+=`<td class="prog-cell">${prog}</td>`;
+      hours.forEach(hr=>{
+        if(occ.has(hr))return;
+        const en=pe.find(e=>e.s===hr);
+        if(en){
+          const hi=selected.size>0&&en.c.some(c=>selected.has(c));
+          const di=selected.size>0&&!hi;
+          h+=`<td colspan="${en.n}" class="entry${hi?" highlight":""}${di?" dimmed":""}">${en.l}</td>`;
+        }else h+=`<td></td>`;
+      });
+      h+='</tr>';
+    });
+  });
+  h+='</tbody></table>';
+  document.getElementById("grid").innerHTML=h;
+}
+
+function toggle(k){selected.has(k)?selected.delete(k):selected.add(k);render()}
+function clearAll(){selected.clear();render()}
+function loadPreset(i){selected=new Set(presets[i].courses);render()}
+function delPreset(i){presets.splice(i,1);localStorage.setItem("tt-presets",JSON.stringify(presets));render()}
+function savePreset(){
+  const n=(document.getElementById("pName")||{}).value||"";
+  if(!n.trim()||!selected.size)return;
+  presets=presets.filter(p=>p.name!==n.trim());
+  presets.push({name:n.trim(),courses:[...selected]});
+  localStorage.setItem("tt-presets",JSON.stringify(presets));
+  showSave=false;render();
+}
+render();
+</script>
+
+<aside 
+	id="lovable-badge" 
+	role="complementary" 
+	aria-label="Edit with Lovable">
+	<a 
+		id="lovable-badge-cta" 
+		target="_blank" 
+		href="https://lovable.dev/projects/01e20335-7518-4553-b0fd-923d9d21f9a0?utm_source=lovable-badge"
+		rel="noopener"
+		aria-label="Edit with Lovable">
+		<span id="lovable-badge-text">Edit with</span>
+		<svg xmlns="http://www.w3.org/2000/svg" width="52" height="16" fill="none" viewBox="0 0 52 16">
+  <path fill="#FCFBF8" fill-rule="evenodd" d="M20.318 5.25c.643 0 1.206.14 1.69.418a2.81 2.81 0 0 1 1.118 1.191c.266.513.4 1.115.4 1.807s-.134 1.296-.4 1.812a2.81 2.81 0 0 1-1.118 1.193c-.484.278-1.047.418-1.69.418s-1.208-.14-1.695-.418a2.85 2.85 0 0 1-1.125-1.193c-.262-.516-.393-1.12-.393-1.812s.131-1.294.393-1.807a2.848 2.848 0 0 1 1.125-1.191c.487-.279 1.052-.418 1.695-.418Zm0 1.425c-.27 0-.504.076-.7.228-.193.147-.34.37-.443.67-.102.295-.153.66-.153 1.093 0 .435.05.801.153 1.1.102.3.25.524.443.676.196.147.43.22.7.22.27 0 .502-.073.694-.22.193-.152.341-.375.443-.67.103-.299.153-.667.153-1.106 0-.65-.112-1.145-.337-1.481a1.08 1.08 0 0 0-.953-.51ZM32.7 5.25c.61 0 1.127.1 1.549.3.422.197.74.48.953.849.217.368.325.809.325 1.32v2.704c0 .29.02.562.062.812.044.245.108.4.19.466V12h-1.935a5.895 5.895 0 0 1-.105-.684 7.745 7.745 0 0 1-.02-.228 2.293 2.293 0 0 1-.151.203c-.205.242-.47.437-.793.584-.32.143-.685.215-1.094.215-.406 0-.77-.08-1.094-.24a1.845 1.845 0 0 1-.756-.682 1.984 1.984 0 0 1-.27-1.045c0-.606.178-1.069.535-1.388.356-.324.87-.534 1.542-.633l1.125-.16c.225-.032.403-.074.534-.123a.622.622 0 0 0 .288-.196.549.549 0 0 0 .093-.327.65.65 0 0 0-.11-.367.702.702 0 0 0-.32-.27c-.14-.07-.31-.105-.51-.105-.32 0-.576.083-.768.251-.193.164-.298.39-.314.676h-1.923c.016-.434.147-.82.393-1.155.25-.34.596-.604 1.039-.792.442-.189.954-.283 1.535-.283Zm.99 3.498a.98.98 0 0 1-.215.14 2.49 2.49 0 0 1-.584.178l-.473.092c-.315.061-.553.156-.713.283-.155.127-.233.305-.233.534 0 .23.084.412.252.547.168.135.383.203.645.203s.494-.058.694-.173c.201-.118.355-.282.461-.49.11-.21.166-.448.166-.714v-.6Zm4.526-2.375c.065-.125.138-.243.221-.349.197-.25.437-.44.719-.571.282-.135.6-.203.952-.203.528 0 .988.138 1.377.412.389.275.688.67.896 1.186.21.512.314 1.12.314 1.824 0 .7-.107 1.309-.32 1.825-.213.512-.518.906-.915 1.18-.393.275-.854.412-1.383.412-.352 0-.667-.062-.946-.184a1.832 1.832 0 0 1-.7-.554 2.2 2.2 0 0 1-.234-.383V12h-1.843V3h1.862v3.373Zm1.284.296c-.274 0-.51.085-.707.253-.192.163-.338.397-.436.7a3.376 3.376 0 0 0-.148 1.05c0 .406.05.759.148 1.058.098.299.243.53.436.694.197.164.433.246.707.246.279 0 .512-.082.7-.246.193-.164.336-.395.43-.694.099-.3.148-.652.148-1.058 0-.405-.05-.757-.147-1.056-.095-.299-.238-.53-.43-.694a1.015 1.015 0 0 0-.7-.253Zm9.416-1.419c.602 0 1.136.131 1.604.393.466.262.829.643 1.086 1.143.263.5.394 1.097.394 1.794 0 .25-.002.449-.006.596H47.51c.018.288.071.538.164.75a1.3 1.3 0 0 0 .491.596c.214.13.465.196.757.196.319 0 .583-.082.792-.246.209-.167.34-.403.393-.706h1.862a2.48 2.48 0 0 1-.485 1.235 2.54 2.54 0 0 1-1.051.805c-.439.188-.949.283-1.53.283-.655 0-1.225-.125-1.708-.375a2.672 2.672 0 0 1-1.13-1.143c-.267-.508-.4-1.137-.4-1.887 0-.712.14-1.327.418-1.843a2.86 2.86 0 0 1 1.155-1.186c.491-.27 1.051-.405 1.678-.405Zm-.044 1.345c-.274 0-.516.068-.725.203a1.29 1.29 0 0 0-.479.59 2.045 2.045 0 0 0-.132.498h2.562a1.873 1.873 0 0 0-.138-.602 1.061 1.061 0 0 0-.418-.516 1.243 1.243 0 0 0-.67-.173Z" clip-rule="evenodd"/>
+  <path fill="#FCFBF8" d="m26.605 9.995 1.342-4.566h1.924L27.628 12h-2.07l-2.33-6.57h1.98l1.397 4.565Zm-13.013.143h2.256c1.632 0 1.421 1.837 1.418 1.861h-5.603V3h1.93v7.138Zm31.516 1.861h-1.862V3h1.862v8.999Z"/>
+  <path fill="url(#a)" fill-rule="evenodd" d="M2.7 3c1.492 0 2.7 1.192 2.7 2.663v1.012h.9c1.49 0 2.7 1.192 2.7 2.662S7.791 12 6.3 12H0V5.663C0 4.193 1.209 3 2.7 3Z" clip-rule="evenodd"/>
+  <defs>
+    <radialGradient id="a" cx="0" cy="0" r="1" gradientTransform="matrix(-1.54236 7.07838 -10.231 -2.15602 4.627 5.022)" gradientUnits="userSpaceOnUse">
+      <stop offset=".106" stop-color="#FE7B02"/>
+      <stop offset=".394" stop-color="#FE3F21"/>
+      <stop offset=".608" stop-color="#F858BC"/>
+      <stop offset=".929" stop-color="#575ECF"/>
+    </radialGradient>
+  </defs>
+</svg>
+
+
+	</a>
+	
+	<span id="lovable-badge-divider" aria-hidden="true"></span>
+	
+	<button 
+		id="lovable-badge-close"
+		aria-label="Dismiss"
+		title="Dismiss"
+		type="button">
+		<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 16 16" aria-hidden="true">
+			<path d="M10.646 4.646a.5.5 0 1 1 .707.708L8.707 8l2.646 2.646a.5.5 0 1 1-.707.707L8 8.707l-2.646 2.646a.5.5 0 1 1-.708-.707L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708L8 7.293l2.646-2.647Z"/>
+		</svg>
+	</button>
+</aside>
+<script>
+	// Don't show the lovable-badge if the page is in an iframe or if it's being rendered by puppeteer (screenshot service)
+	if (window.self !== window.top || navigator.userAgent.includes('puppeteer')) {
+		// the page is in an iframe
+		var badge = document.getElementById('lovable-badge');
+		if (badge) {
+			badge.style.display = 'none';
+		}
+	}
+
+	// Add click event listener to close button with animation
+	var closeButton = document.getElementById('lovable-badge-close');
+	if (closeButton) {
+		closeButton.addEventListener('click', function(event) {
+			event.preventDefault();
+			event.stopPropagation();
+			var badge = document.getElementById('lovable-badge');
+			if (badge) {
+				badge.classList.add('closing');
+				setTimeout(function() {
+					if (badge) {
+						badge.style.display = 'none';
+					}
+				}, 240);
+			}
+		});
+	}
+</script>
+</body>
+</html>
